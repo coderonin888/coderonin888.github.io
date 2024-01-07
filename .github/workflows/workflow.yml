@@ -1,4 +1,4 @@
-name: 'github actions build and deploy gh-pages'
+name: 'docs'
 on:
   push:
     branches:
@@ -24,34 +24,13 @@ jobs:
           npm install
           npm run build
           cp README.md .site/
-      - name: "Deploy Github"
-        uses: s0/git-publish-subdir-action@master
-        env:
-          NODE_OPTIONS: "--max_old_space_size=8192"
-          REPO: git@github.com:binghe001/binghe001.github.io.git
-          BRANCH: master
-          FOLDER: .site
-          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_PRIVATE_KEY }}
-      - name: Sync to Gitcode
-        uses: wearerequired/git-mirror-action@master
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+      - name: Deploy to GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v4
         with:
-          source-repo: git@github.com:binghe001/binghe001.github.io.git
-          destination-repo: git@gitcode.net:binghe/binghe.gitcode.host.git
-#      - name: "Deploy Gitcode"
-#        uses: s0/git-publish-subdir-action@master
-#        env:
-#          NODE_OPTIONS: "--max_old_space_size=4096"
-#          REPO: git@gitcode.net:binghe/binghe.gitcode.host.git
-#          BRANCH: master
-#          FOLDER: .site
-#          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_GITCODE_PRIVATE_KEY }}
-#      - name: "Deploy Gitee"
-#        uses: s0/git-publish-subdir-action@master
-#        env:
-#          REPO: git@gitee.com:binghe001/binghe001.git
-#          BRANCH: master
-#          FOLDER: .site
-#          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_GITEE_PRIVATE_KEY }}
-#          KNOWN_HOSTS_FILE: docs/hosts/known_hosts
+          # 部署到 gh-pages 分支
+          target_branch: gh-pages
+          # 部署目录为 VuePress 的默认输出目录
+          build_dir: docs/.vuepress/dist
+        env:
+          # @see https://docs.github.com/cn/actions/reference/authentication-in-a-workflow#about-the-github_token-secret
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
